@@ -1,2 +1,2 @@
-# KharkivITCluster
-Репозиторій для курсів Prof2IT
+# Kharkiv IT Cluster
+Репозиторій для виконання завдань курсів Prof2IT

@@ -1,0 +1,42 @@
+@startuml Database_Schema_en
+
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam classBackgroundColor transparent
+skinparam style strictuml
+
+entity "Customer" {
+  *customer_id : INT
+  --
+  name : VARCHAR
+  email : VARCHAR
+  phone : VARCHAR
+}
+
+entity "Order" {
+  *order_id : INT
+  *customer_id : INT
+  --
+  order_date : DATE
+  total_amount : DECIMAL
+}
+
+entity "Product" {
+  *product_id : INT
+  --
+  name : VARCHAR
+  price : DECIMAL
+  stock_quantity : INT
+}
+
+entity "Order_Product" {
+  *order_id : INT
+  *product_id : INT
+  --
+  quantity : INT
+}
+
+Customer ||--o{ Order : ""
+Order ||--o{ Order_Product : ""
+Product ||--o{ Order_Product : ""
+@enduml

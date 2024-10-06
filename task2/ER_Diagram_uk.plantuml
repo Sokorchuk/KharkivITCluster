@@ -1,0 +1,30 @@
+@startuml ER_Diagram_uk
+
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam style strictuml
+
+entity "Покупець" as Customer {
+  * ID : int
+  --
+  Імʼя : string
+  Email : string
+}
+
+entity "Замовлення" as Order {
+  * ID : int
+  --
+  Дата : date
+  Сума : float
+}
+
+entity "Товар" as Product {
+  * ID : int
+  --
+  Назва : string
+  Ціна : float
+}
+
+Customer ||--o{ Order : робить
+Order ||--o{ Product : містить
+@enduml

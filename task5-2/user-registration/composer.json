@@ -1,0 +1,16 @@
+{
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ihor Sokorchuk",
+            "email": "ihor.sokorchuk@nure.ua"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    }
+}

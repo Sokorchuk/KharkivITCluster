@@ -1,0 +1,65 @@
+<?php
+
+// Підключення до бібліотек та бази даних
+require 'vendor/autoload.php'; // Завантаження Composer autoload для PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+$pdo = new PDO('sqlite:/path/to/your/database.db'); // Вкажіть правильний шлях до бази даних
+
+// Отримання даних з форми реєстрації
+$name = $_POST['name'];
+$email = $_POST['email'];
+$password = $_POST['password'];
+
+// Перевірка, чи існує користувач з такою ж електронною адресою
+$stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email = :email');
+$stmt->execute(['email' => $email]);
+
+if ($stmt->fetchColumn() > 0) {
+    echo "Помилка: користувач із такою електронною адресою вже зареєстрований.";
+    exit;
+}
+
+// Вставка нового користувача в базу даних
+try {
+    $stmt = $pdo->prepare('INSERT INTO users (name, email, password) VALUES (:name, :email, :password)');
+    $stmt->execute([
+        'name' => $name,
+        'email' => $email,
+        'password' => password_hash($password, PASSWORD_DEFAULT) // Хешування паролю
+    ]);
+    
+    // Надсилання підтвердження через Gmail
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'yourgmail@gmail.com'; // Ваш Gmail
+        $mail->Password = 'yourpassword'; // Пароль до вашого Gmail
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Налаштування одержувача та вмісту листа
+        $mail->setFrom('yourgmail@gmail.com', 'Ваш Магазин');
+        $mail->addAddress($email, $name);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Підтвердження реєстрації';
+        $mail->Body    = 'Дякуємо за реєстрацію, ' . $name . '! Ваш обліковий запис успішно створено.';
+
+        $mail->send();
+        echo "Реєстрація успішна! Перевірте вашу електронну пошту для підтвердження.";
+    } catch (Exception $e) {
+        echo "Не вдалося надіслати підтвердження на електронну пошту: {$mail->ErrorInfo}";
+    }
+
+} catch (PDOException $e) {
+    if ($e->getCode() === '23000') { // Код 23000 вказує на порушення обмеження
+        echo "Помилка: користувач із такою електронною адресою вже зареєстрований.";
+    } else {
+        echo "Виникла помилка: " . $e->getMessage();
+    }
+}

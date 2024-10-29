@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+$config = require __DIR__ . '/config/config.php';
+$db = new PDO('sqlite:' . $config['db_path']);
+$db->exec("CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE,
+    password TEXT,
+    is_confirmed INTEGER DEFAULT 0,
+    token TEXT
+);");
